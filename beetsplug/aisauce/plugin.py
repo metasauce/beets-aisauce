@@ -21,6 +21,7 @@ class AISauce(MetadataSourcePlugin):
     def candidates(
         self, items: Sequence[Item], artist: str, album: str, va_likely: bool
     ) -> Iterable[AlbumInfo]:
+        # What weights and distances? AI!?
         return []
 
     def item_candidates(

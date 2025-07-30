@@ -23,12 +23,12 @@ figuring out what your mystery tracks are all about.
 1. **Prerequisites**: Make sure you have Beets installed (`pip install beets`), an API key for your preferred AI service, and **zero shame** about using AI.
 2. **Grab the Sauce**:
    ```bash
-   pip install beets-ai-sauce
+   pip install beets-aisauce
     ```
 3. **Configure the Plugin**: Add the plugin to your Beets configuration file (`config.yaml`):
     ```yaml
     plugins: 
-       - ai_sauce
+       - aisauce
     ```
 4. Stop thinking and let the AI do the heavy lifting.
 
