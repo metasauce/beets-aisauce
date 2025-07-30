@@ -15,6 +15,7 @@ classifiers = [
     "Topic :: Text Processing :: General",
 ]
 dependencies = [
+    "beets @ git+https://github.com/beetbox/beets/@268075063fbf5f796ee1bc419e5268f593c85f4d",
     #"beets >= 2.4.2", # Future version with metadata_plugins support (not released yet, we should pin to master)
 ]
 
@@ -28,18 +29,21 @@ changelog = "https://github.com/metasauce/beets-aisauce/blob/master/CHANGELOG.md
 
 [project.optional-dependencies]
 typed = ["mypy"]
-test = ["pytest", "pytest-cov"]
+test = ["pytest", "pytest-cov", "responses"]
 dev = ["ruff", "pre-commit"]
 
+# compatibility problem of tools (but works with setuptools):
+# namespaced packages cause issues with hatchling/pdm + editable installs + pytest
+# - pytest import not found
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [tool.hatch.build.targets.wheel]
-packages = ["beetsplug.aisauce"]
+only-include = ["beetsplug"]
 
 [tool.ruff]
-include = ["pyproject.toml", "plistsync/**/*.py", "tests/**/*.py"]
+include = ["pyproject.toml", "beetsplug/**/*.py", "tests/**/*.py"]
 
 [tool.ruff.lint]
 fixable = ["ALL"]
@@ -50,3 +54,8 @@ convention = "numpy"
 [tool.mypy]
 check_untyped_defs = true
 disallow_untyped_decorators = true
+
+
+[tool.hatch.metadata]
+# TODO: remove with next beets release
+allow-direct-references = true
