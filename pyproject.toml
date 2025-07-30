@@ -42,7 +42,6 @@ packages = ["beetsplug.aisauce"]
 include = ["pyproject.toml", "plistsync/**/*.py", "tests/**/*.py"]
 
 [tool.ruff.lint]
-select = ["I", "D", "F", "E", "W", "C", "T", "B", "Q", "A"]
 fixable = ["ALL"]
 
 [tool.ruff.lint.pydocstyle]
