@@ -42,6 +42,14 @@ TODO
 
 Great ideas welcome! Especially if they include more puns. Open a PR or send us a message in a bottle (GitHub issues also work).
 
+
+## Runngin mypy locally
+
+To run mypy locally, make sure you have it installed:
+```bash
+mypy  --namespace-packages --explicit-package-bases .
+```
+
 ## License
 
 This project is licensed under the MIT License—meaning you can do almost anything, but please don't sue us if the AI names your tracks "Untitled Jam 42."

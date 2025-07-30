@@ -59,3 +59,8 @@ disallow_untyped_decorators = true
 [tool.hatch.metadata]
 # TODO: remove with next beets release
 allow-direct-references = true
+
+[[tool.mypy.overrides]]
+# Suppresses error messages about imports that cannot be resolved.
+module = ["beets.*", "confuse.*"]
+ignore_missing_imports = true
