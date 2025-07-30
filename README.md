@@ -2,7 +2,7 @@
 *Because your tunes deserve a little extra flavor.*
 
 Welcome to the **Beets AI Sauce Plugin**, that lets artificial intelligence take a stab at 
-figuring out what your mystery tracks are actually called.
+figuring out what your mystery tracks are all about.
 
 ---
 
