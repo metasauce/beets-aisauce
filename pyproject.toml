@@ -1,0 +1,27 @@
+[project]
+name = "beets-aisauce"
+version = "0.0.1"
+description = "AI autotagger source for beets (http://beets.io)."
+authors = [{ name = "Sebastian B. Mohr", email = "sebastian@mohrenclan.de" }]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9, <4"
+
+
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Text Processing :: General",
+]
+dependencies = [
+    "beets >= 2.4.2", # Future version with metadata_plugins support (not released yet, we should pin to master)
+]
+
+
+[project.urls]
+homepage = "https://github.com/metasauce/beets-aisauce"
+repository = "https://github.com/metasauce/beets-aisauce"
+changelog = "https://github.com/metasauce/beets-aisauce/blob/master/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/metasauce/beets-aisauce/issues"
