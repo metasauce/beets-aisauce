@@ -15,8 +15,10 @@ classifiers = [
     "Topic :: Text Processing :: General",
 ]
 dependencies = [
-    "beets @ git+https://github.com/beetbox/beets/@268075063fbf5f796ee1bc419e5268f593c85f4d",
     #"beets >= 2.4.2", # Future version with metadata_plugins support (not released yet, we should pin to master)
+    "beets @ git+https://github.com/beetbox/beets/@268075063fbf5f796ee1bc419e5268f593c85f4d",
+    "openai >= 1.98.0",
+    "instructor >= 1.10.0",
 ]
 
 

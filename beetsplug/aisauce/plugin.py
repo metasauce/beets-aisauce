@@ -14,6 +14,7 @@ class Provider(TypedDict):
     id: str
     api_key: str
     api_base_url: str
+    model: str
 
 
 class AISauceSource(TypedDict):
@@ -64,6 +65,7 @@ class AISauce(MetadataSourcePlugin):
                     "id": str,
                     "api_key": str,
                     "api_base_url": str,
+                    "model": str,
                 }
             )
         )
@@ -150,6 +152,9 @@ class AISauce(MetadataSourcePlugin):
     def item_candidates(
         self, item: Item, artist: str, title: str
     ) -> Iterable[TrackInfo]:
+        """
+        Beets by default calls this for singletons, but not for albums.
+        """
         return []
 
 

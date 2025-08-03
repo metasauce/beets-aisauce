@@ -1,7 +1,10 @@
+import os
 from beets.test.helper import PluginTestCase
+from pydantic import BaseModel
 import pytest
 
 from beetsplug import aisauce
+from beetsplug.aisauce.ai import get_ai_client, get_structured_output
 
 
 class AISauceConfigTestCase(PluginTestCase):
@@ -98,38 +101,58 @@ class AISauceConfigTestCase(PluginTestCase):
         assert sources[0]["system_prompt"] == "You are an expert in musical metadata."
 
 
-# class IntegrationTest(PluginTestCase):
-#     """Mixin for local tests that require AISauce plugin."""
+@pytest.mark.skipif(
+    os.environ.get("AI_API_KEY") is None
+    or os.environ.get("AI_API_URL") is None
+    or os.environ.get("AI_MODEL") is None,
+    reason="AI_API_KEY or AI_API_URL or AI_MODEL not set",
+)
+class IntegrationTest(PluginTestCase):
+    """Mixin for local tests that require AISauce plugin."""
 
-#     def setUp(self):
-#         super().setUp()
-#         self.ai = aisauce.AISauce()
-#         self.ai.config.set(
-#             {
-#                 "providers": [
-#                     {
-#                         "id": "openai",
-#                         "api_key": "your_api_key_here",
-#                         "api_base_url": "https://api.deepseek.com",
-#                     }
-#                 ],
-#                 "sources": [
-#                     {
-#                         "provider_id": "openai",
-#                         "user_prompt": "What is the metadata for this file?",
-#                         "system_prompt": "You are an expert in musical metadata.",
-#                     }
-#                 ],
-#             }
-#         )
+    def setUp(self):
+        super().setUp()
+        self.ai = aisauce.AISauce()
+        self.ai.config.set(
+            {
+                "providers": [
+                    {
+                        "id": "test_provider",
+                        "api_key": os.environ.get("AI_API_KEY"),
+                        "api_base_url": os.environ.get("AI_API_URL"),
+                        "model": os.environ.get("AI_MODEL"),
+                    }
+                ],
+                "sources": [
+                    {
+                        "provider_id": "test_provider",
+                        "user_prompt": "What is the metadata for this file?",
+                        "system_prompt": "You are an expert in musical metadata.",
+                    }
+                ],
+            }
+        )
 
-#     def tearDown(self):
-#         self.ai.config.set(
-#             {
-#                 "providers": [],
-#                 "sources": [],
-#             }
-#         )
+    def test_structured_out(self):
+        class Foo(BaseModel):
+            title: str
+            artist: str
+
+        client = get_ai_client(self.ai.providers[0])
+
+        out = get_structured_output(
+            client,
+            user_prompt="What is the title and artist of this song? `99 Red Balloons - Nena`",
+            system_prompt="You are an expert in musical metadata.",
+            model=self.ai.providers[0]["model"],
+            type=Foo,
+        )
+
+        assert isinstance(out, Foo)
+        assert out.title is not None
+        assert out.artist is not None
+        print(f"Title: {out.title}, Artist: {out.artist}")
+        raise NotImplementedError
 
 
 class AISauceTestCase(PluginTestCase):
@@ -154,6 +177,7 @@ _dummy_provider = {
     "id": "Dummy",
     "api_key": "your_api_key_here",
     "api_base_url": "https://api.deepseek.com",
+    "model": "deepseek-chat",
 }
 
 

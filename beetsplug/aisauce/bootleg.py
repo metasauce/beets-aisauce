@@ -17,7 +17,7 @@ import taglib
 from humanize import naturalsize
 
 from .models.track import Track
-from .deepseek import cleanup_metadata
+from .ai import cleanup_metadata
 
 TEMP_DIR = tempfile.mkdtemp()
 
