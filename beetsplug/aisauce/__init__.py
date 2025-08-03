@@ -1,3 +1,3 @@
-from .plugin import AISauce
+from .aisauce import AISauce
 
 __all__ = ["AISauce"]

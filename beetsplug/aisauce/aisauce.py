@@ -1,6 +1,7 @@
 from __future__ import annotations
+import asyncio
 from collections.abc import Iterable
-from typing import Sequence, TypedDict
+from typing import Coroutine, Sequence
 
 from beets.autotag import TrackInfo, AlbumInfo
 from beets.metadata_plugins import MetadataSourcePlugin
@@ -8,38 +9,9 @@ from beets.library import Item
 import confuse
 
 
-class Provider(TypedDict):
-    """A provider for open ai api."""
-
-    id: str
-    api_key: str
-    api_base_url: str
-    model: str
-
-
-class AISauceSource(TypedDict):
-    """Configuration for AISauce plugin."""
-
-    provider: Provider
-    user_prompt: str
-    system_prompt: str
-
-    # (
-    #     {
-    #         # "system_prompt": _default_system_prompt,
-    #         # "user_prompt": __default_user_prompt,
-    #         "clean_all_fields": True,
-    #         # should all incoming data be removed before write back?
-    #         # this likely only keeps: title, artist, album, genre, year
-    #         "title_as_album": True,
-    #         "album_overwrite": False,  # set to string to always set the album
-    #         "album_artist_overwrite": False,  # set to string to always set the album artist
-    #         "compilation": False,  # set to True to always set compilation to True
-    #         "ensure_this_str_in_title": "Bootleg",
-    #         # if ensured_string.lower() not in meta.title.lower():
-    #         # meta.title = f"{meta.title} [{ensured_string}]"
-    #     }
-    # )
+from .ai import get_ai_client, get_structured_output
+from .types import Provider, AISauceSource, AlbumInfoAIResponse, TrackInfoAIResponse
+from .prompts import _default_user_prompt, _default_system_prompt
 
 
 class AISauce(MetadataSourcePlugin):
@@ -115,7 +87,7 @@ class AISauce(MetadataSourcePlugin):
                 )
             ]
 
-        rets: Sequence[AISauceSource] = []
+        rets: list[AISauceSource] = []
         for sv in config_subview:  # type: ignore
             provider = self.provider_for_id(sv["provider_id"])
             if provider is None:
@@ -146,8 +118,29 @@ class AISauce(MetadataSourcePlugin):
     def candidates(
         self, items: Sequence[Item], artist: str, album: str, va_likely: bool
     ) -> Iterable[AlbumInfo]:
-        # What weights and distances? AI!?
-        return []
+        async def _run() -> list[AlbumInfoAIResponse]:
+            tasks: list[Coroutine[None, None, AlbumInfoAIResponse]] = []
+            for source in self.sources:
+                provider = source["provider"]
+                client = get_ai_client(provider)
+                tasks.append(
+                    get_structured_output(
+                        client=client,
+                        user_prompt=_format_user_prompt(
+                            source["user_prompt"],
+                            items,
+                            artist=artist,
+                            album=album,
+                            va_likely=va_likely,
+                        ),
+                        system_prompt=source["system_prompt"],
+                        type=AlbumInfoAIResponse,
+                        model=provider["model"],
+                    )
+                )
+            return await asyncio.gather(*tasks)
+
+        return [i.to_album_info() for i in asyncio.run(_run())]
 
     def item_candidates(
         self, item: Item, artist: str, title: str
@@ -155,71 +148,63 @@ class AISauce(MetadataSourcePlugin):
         """
         Beets by default calls this for singletons, but not for albums.
         """
-        return []
+
+        async def _run() -> list[TrackInfoAIResponse]:
+            tasks: list[Coroutine[None, None, TrackInfoAIResponse]] = []
+            for source in self.sources:
+                provider = source["provider"]
+                client = get_ai_client(provider)
+                tasks.append(
+                    get_structured_output(
+                        client=client,
+                        user_prompt=_format_user_prompt(
+                            source["user_prompt"],
+                            [item],
+                            artist=artist,
+                        ),
+                        system_prompt=source["system_prompt"],
+                        type=TrackInfoAIResponse,
+                        model=provider["model"],
+                    )
+                )
+            return await asyncio.gather(*tasks)
+
+        return [i.to_track_info() for i in asyncio.run(_run())]
 
 
-_default_system_prompt = """
-You are a helpful programming assistant, and an expert in musical metadata.
-The user will provide messy metadata, and your task is to clean up the metadata with
-consistent formatting. Often the metadata is for bootlegs.
+def _format_user_prompt(
+    user_prompt: str,
+    items: Sequence[Item],
+    artist: str | None = None,
+    album: str | None = None,
+    va_likely: bool = False,
+) -> str:
+    """
+    Format the user prompt with the provided items and additional information.
+    """
+    # Create user prompt with input file(s) metadata
+    formatted_input = "\n\nINPUT FILES:\n["
+    for item in items:
+        formatted_input += "\n{"
+        # TODO: Parsing
+        for key, value in item.items():
+            if isinstance(value, str):
+                formatted_input += f'\n  "{key}": "{value}",'
+            elif isinstance(value, list):
+                formatted_input += f'\n  "{key}": {value},'
+            else:
+                formatted_input += f'\n  "{key}": {str(value)},'
+        formatted_input += "\n}"
+    formatted_input += "\n]"
 
-Please parse the following quantities and output them in JSON format:
-- title
-- artist
-- album
-- genre
-- date, but only keep the year (YYYY)
+    # Additional info for album
+    if album or artist or va_likely:
+        formatted_input += "\n\nADDITIONAL INFO (heuristics from all files combined):"
+    if album:
+        formatted_input += f"\n- ALBUM: {album}"
+    if artist:
+        formatted_input += f"\n- ALBUMARTIST: {artist}"
+    if va_likely:
+        formatted_input += "\n- This is likely a compilation album (Various Artists)."
 
-Do not invent values for fields that you cannot infer from the input.
-
-EXAMPLE INPUT:
-Clean up the following metadata:
-{
-    "FILE:": ["  Busta Rhymes - Gimme Some More (winslow.edit).mp3 "],
-    "TITLE": [" Busta Rhymes - Gimme Some More [Free DL via Soundcloud] "],
-    "ARTIST": ["  winslow "],
-    "ALBUM": [""],
-    "GENRE": ["  DnB, neurofunk  "],
-    "DATE": ["  14.11.2021  "]
-    "COMPOSER": ["  Jablonksy, Steve  "],
-    "COMMENT": ["  got this from a friend  "]
-    "OTHER FIELD:": ["  some other value  "]
-}
-
-EXAMPLE JSON OUTPUT:
-{
-    "title": "Gimme Some More [Busta Rhymes] (winslow.edit)",
-    "artist": "winslow",
-    "album": "",
-    "genre": "Drum And Bass; Neurofunk",
-    "date": "2014"
-}
-"""
-
-_default_user_prompt = """
-Clean up the following metadata for a bootleg I downloaded.
-
-Often, Artist, Title and Album are empty or malformatted, but the file name might provide
-a clue.
-
-Note, for my bootlegs, a song with an input title like
-"Ed Sheeran - Shape Of You (IZUK Bootleg)"
-should have in the output
-"IZUK" as the artist
-and "Shape Of You [Ed Sheeran] (IZUK Bootleg)" for both the title and album.
-
-If genres are contained, Title-case them and dont use abbreviations like "DnB" or "D&B",
-use "Drum And Bass" instead. If multiple genres are returned, separate them in your reply
-with a semicolon. In most cases, the genre is likely "Drum And Bass".
-
-Make sure the casing is sensible - OFTEN THE INPUT HAS SHOUTCASE (capslock),
-But I Prefer Title Case.
-
-Remove strings like "Free DL via Soundcloud", "[Free Download]" and "FREE DOWNLOAD" from the title and other fields.
-
-Make sure that the word "Bootleg" is contained in the title, and if not, add it as "[Bootleg]" at the end.
-Usually you will find something like "(Danny Bird Remix)" towards the end of the title, in this case, add "Bootleg" there: "(Danny Bird Remix, Bootleg)".
-
-INPUT:
-{}
-"""
+    return user_prompt + formatted_input

@@ -1,10 +1,14 @@
+import asyncio
 import os
 from beets.test.helper import PluginTestCase
 from pydantic import BaseModel
 import pytest
-
+from beets.library import Item
 from beetsplug import aisauce
-from beetsplug.aisauce.ai import get_ai_client, get_structured_output
+from beetsplug.aisauce.ai import (
+    get_ai_client,
+    get_structured_output,
+)
 
 
 class AISauceConfigTestCase(PluginTestCase):
@@ -60,8 +64,8 @@ class AISauceConfigTestCase(PluginTestCase):
         assert isinstance(sources[0]["provider"], dict)
         assert "user_prompt" in sources[0]
         assert "system_prompt" in sources[0]
-        assert sources[0]["user_prompt"] == aisauce.plugin._default_user_prompt
-        assert sources[0]["system_prompt"] == aisauce.plugin._default_system_prompt
+        assert sources[0]["user_prompt"] == aisauce.aisauce._default_user_prompt
+        assert sources[0]["system_prompt"] == aisauce.aisauce._default_system_prompt
 
     def test_source_and_provider_no_prompts(self):
         # provider is set, and a source but without prompts
@@ -81,8 +85,8 @@ class AISauceConfigTestCase(PluginTestCase):
         assert isinstance(sources[0]["provider"], dict)
         assert "user_prompt" in sources[0]
         assert "system_prompt" in sources[0]
-        assert sources[0]["user_prompt"] == aisauce.plugin._default_user_prompt
-        assert sources[0]["system_prompt"] == aisauce.plugin._default_system_prompt
+        assert sources[0]["user_prompt"] == aisauce.aisauce._default_user_prompt
+        assert sources[0]["system_prompt"] == aisauce.aisauce._default_system_prompt
 
     def test_source_and_provider(self):
         # everything specified by the user config
@@ -123,36 +127,50 @@ class IntegrationTest(PluginTestCase):
                         "model": os.environ.get("AI_MODEL"),
                     }
                 ],
-                "sources": [
-                    {
-                        "provider_id": "test_provider",
-                        "user_prompt": "What is the metadata for this file?",
-                        "system_prompt": "You are an expert in musical metadata.",
-                    }
-                ],
             }
         )
 
-    def test_structured_out(self):
+    def test_generic_structured_out(self):
         class Foo(BaseModel):
             title: str
             artist: str
 
         client = get_ai_client(self.ai.providers[0])
 
-        out = get_structured_output(
-            client,
-            user_prompt="What is the title and artist of this song? `99 Red Balloons - Nena`",
-            system_prompt="You are an expert in musical metadata.",
-            model=self.ai.providers[0]["model"],
-            type=Foo,
+        out = asyncio.run(
+            get_structured_output(
+                client,
+                user_prompt="What is the title and artist of this song? `99 Red Balloons - Nena`",
+                system_prompt="You are an expert in musical metadata.",
+                model=self.ai.providers[0]["model"],
+                type=Foo,
+            )
         )
 
         assert isinstance(out, Foo)
         assert out.title is not None
         assert out.artist is not None
-        print(f"Title: {out.title}, Artist: {out.artist}")
-        raise NotImplementedError
+        assert out.title == "99 Red Balloons"
+        assert out.artist == "Nena"
+
+    def test_candidates(self):
+        # Get items from test file
+        item = Item.from_path(
+            os.path.join(
+                os.path.dirname(__file__), "data", "Annix - Antidote [free dl].mp3"
+            )
+        )
+        out = self.ai.candidates(
+            items=[item],
+            artist=item.artist,
+            album=item.album,
+            va_likely=False,
+        )
+
+        # Check that the output is a list of AlbumInfo objects
+        assert isinstance(out, list)
+        assert len(out) == 1
+        assert isinstance(out[0], aisauce.aisauce.AlbumInfo)
 
 
 class AISauceTestCase(PluginTestCase):

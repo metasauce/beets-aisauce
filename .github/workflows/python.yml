@@ -67,7 +67,7 @@ jobs:
             - name: Check type hints with mypy
               id: mypy
               run: |
-                  mypy  --namespace-packages --explicit-package-bases --show-error-codes --config-file ./pyproject.toml ./
+                  mypy  --namespace-packages --explicit-package-bases --show-error-codes --config-file ./pyproject.toml ./beetsplug
 
     test:
         name: Run tests

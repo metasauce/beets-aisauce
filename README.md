@@ -1,7 +1,7 @@
 # Beets AI Sauce Plugin
 *Because your tunes deserve a little extra flavor.*
 
-Welcome to the **Beets AI Sauce Plugin**, that lets artificial intelligence take a stab at 
+Let artificial intelligence take a stab at 
 figuring out what your mystery tracks are all about.
 
 ---
@@ -15,8 +15,9 @@ figuring out what your mystery tracks are all about.
 
 ## Features
 
-- **Auto-Metadata Magic**: Summon track titles, album info, artist bios, and more from the mysterious AI realm.
-- **MORE**: TODO
+- **Auto-Metadata Magic**: Summon track titles, album info, and more metadata from the mysterious AI realm.
+- **Cleanup Crew**: Automatically clean up your metadata mess with AI-powered suggestions. E.g. remove "Free Download" from titles, because you definitely have those files ;)
+
 
 ## Installation
 
@@ -29,27 +30,53 @@ figuring out what your mystery tracks are all about.
     ```yaml
     plugins: 
        - aisauce
+
+    aisauce:
+        providers:
+            - id: openai
+              model: gpt-4o
+              api_key: YOUR_API_KEY_HERE
     ```
-4. Stop thinking and let the AI do the heavy lifting.
+4. Yummy sauce! You will now get AI-generated metadata suggestions for your tracks on import.
 
-## Usage
+## Advanced Usage
 
 
-TODO
 
 
 ## Contributing
 
 Great ideas welcome! Especially if they include more puns. Open a PR or send us a message in a bottle (GitHub issues also work).
 
-
-## Runngin mypy locally
-
-To run mypy locally, make sure you have it installed:
-```bash
-mypy  --namespace-packages --explicit-package-bases .
-```
-
 ## License
 
 This project is licensed under the MIT License—meaning you can do almost anything, but please don't sue us if the AI names your tracks "Untitled Jam 42."
+
+
+## Development
+
+The following sections are for developers who want to contribute to the project. Feel free to skip if you're just here for the AI sauce.
+
+### Installation for Development
+
+Clone the repository and install the package in editable mode:
+
+```bash
+git clone
+pip install -e .[dev]
+```
+
+### Running Tests
+To run the tests, you can use `pytest`. Make sure you have the necessary dependencies installed:
+
+```bash
+pytest .
+```
+
+### Running mypy locally
+
+Running mypy local is a bit tricky due to the namespace packages used in this project. To run mypy, you need to specify the `--namespace-packages` and `--explicit-package-bases` flags.
+
+```bash
+mypy  --namespace-packages --explicit-package-bases .
+```
