@@ -1,4 +1,17 @@
 # Beets AI Sauce Plugin
+
+
+<p align="center">
+    <a href="https://github.com/metasauce/beets-aisauce/actions">
+        <img alt="build status" src="https://img.shields.io/github/actions/workflow/status/metasauce/beets-aisauce/python.yml" />
+    </a>
+    <a href="https://pypi.org/project/beets-aisauce/">
+        <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/beets-aisauce">
+    </a>
+</p>
+
+
+
 *Because your tunes deserve a little extra flavor.*
 
 Let artificial intelligence decipher and enhance the mysterious metadata of your music tracks.
