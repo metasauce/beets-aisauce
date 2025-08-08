@@ -15,7 +15,11 @@ from .prompts import _default_user_prompt, _default_system_prompt
 
 
 class AISauce(MetadataSourcePlugin):
-    """AI Sauce is a metadata source plugin for beets that does not support"""
+    """
+    AISauce is a metadata source plugin for Beets that augments music metadata using AI.
+
+    It doesn't support classical music sources directly but provides AI-driven enhancements.
+    """
 
     def __init__(self):
         super().__init__()

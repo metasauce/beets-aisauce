@@ -1,47 +1,69 @@
 # Beets AI Sauce Plugin
 *Because your tunes deserve a little extra flavor.*
 
-Let artificial intelligence take a stab at 
-figuring out what your mystery tracks are all about.
-
----
+Let artificial intelligence decipher and enhance the mysterious metadata of your music tracks.
 
 
 ## Who Needs This? (Definitely You)
 
 - **You**: The person who once gazed at your MP3 folder and thought, "My beats need more AI jazz hands!"
-- **Also You**: If you trust a chatbot more than your buddy Dave who keeps calling every track "Track 1".
-- **Definitely You**: If you've got folders full of unlabeled files from random rips, mystery MP3s, or bootlegs you swear are real.
+- **Also You**: If you trust AI more than your friend who can't stop labeling everything "Track 1".
+- **Definitely You**: If you own folders full of tracks from bootlegs, unknown rips, or suspect compilation albums.
+
 
 ## Features
 
-- **Auto-Metadata Magic**: Summon track titles, album info, and more metadata from the mysterious AI realm.
-- **Cleanup Crew**: Automatically clean up your metadata mess with AI-powered suggestions. E.g. remove "Free Download" from titles, because you definitely have those files ;)
+- **Auto-Metadata Magic**: Automatically retrieve and correct track and album metadata using AI-generated suggestions.
+- **Cleanup Crew**: Strip away unnecessary embellishments like "Free Download" in titles or SHOUTCAPS, giving your library a polished appearance.
+- **Extensible System**: Leverage AI configurations and prompts custom tailored for your library needs.
 
 
 ## Installation
 
-1. **Prerequisites**: Make sure you have Beets installed (`pip install beets`), an API key for your preferred AI service, and **zero shame** about using AI.
-2. **Grab the Sauce**:
+### Prerequisites
+- **Beets**: Make sure you have Beets installed (`pip install beets`),
+- **AI Service API Key**: Get an API key from your preferred AI service provider (e.g., OpenAI, Deepseek).
+    - Any service that supports openAI endpoints should work.
+
+### Plugin Setup
+
+1. **Installation**: Obtain the sauce by installing the plugin via pip:
    ```bash
    pip install beets-aisauce
-    ```
-3. **Configure the Plugin**: Add the plugin to your Beets configuration file (`config.yaml`):
-    ```yaml
+   ```
+2. **Configuration**: Add the plugin to your Beets configuration file (`config.yaml`):
+   ```yaml
     plugins: 
-       - aisauce
+      - aisauce
 
     aisauce:
         providers:
             - id: openai
               model: gpt-4o
               api_key: YOUR_API_KEY_HERE
+              api_base_url: https://api.openai.com/v1
     ```
-4. Yummy sauce! You will now get AI-generated metadata suggestions for your tracks on import.
+3. Execute the Ai Sauce: Import your tracks through Beets to start receiving AI-enhanced metadata suggestions.
+
 
 ## Advanced Usage
 
+- **Custom Rules**: Sometimes you have specific metadata correction rules that you want to apply. You can modify the default user and system prompts by adding a `source` to your configuration file:
+    ```yaml
+    aisauce:
+        providers:
+            - id: openai
+              model: gpt-4o
+              api_key: YOUR_API_KEY_HERE
 
+        sources:
+            - provider_id: openai
+              user_prompt: '
+                Additional rules:
+                - Replace any occurrences of Vulgar or inappropriate words with "**sauced**".
+                '
+    ```
+- Multiple sources can be defined allowing you to test different prompts or configurations for different types of music or metadata corrections and models.
 
 
 ## Contributing
@@ -51,6 +73,7 @@ Great ideas welcome! Especially if they include more puns. Open a PR or send us 
 ## License
 
 This project is licensed under the MIT License—meaning you can do almost anything, but please don't sue us if the AI names your tracks "Untitled Jam 42."
+
 
 
 ## Development
