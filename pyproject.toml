@@ -1,8 +1,8 @@
 [project]
+authors = [{ name = "Sebastian B. Mohr", email = "sebastian@mohrenclan.de" }]
 name = "beets-aisauce"
 version = "0.0.1"
 description = "AI autotagger source for beets (http://beets.io)."
-authors = [{ name = "Sebastian B. Mohr", email = "sebastian@mohrenclan.de" }]
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9, <4"
@@ -13,10 +13,11 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Multimedia :: Sound/Audio",
     "Topic :: Text Processing :: General",
+    "Programming Language :: Python :: 3",
 ]
 dependencies = [
     #"beets >= 2.4.2", # Future version with metadata_plugins support (not released yet, we should pin to master)
-    "beets @ git+https://github.com/beetbox/beets/@268075063fbf5f796ee1bc419e5268f593c85f4d",
+    "beets",
     "openai >= 1.98.0",
     "instructor >= 1.10.0",
     "eval-type-backport; python_version == '3.9'",
