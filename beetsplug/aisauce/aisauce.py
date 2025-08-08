@@ -140,7 +140,8 @@ class AISauce(MetadataSourcePlugin):
                 )
             return await asyncio.gather(*tasks)
 
-        return [i.to_album_info() for i in asyncio.run(_run())]
+        candidates = asyncio.run(_run())
+        return [c.to_album_info(data_source=self.data_source) for c in candidates]
 
     def item_candidates(
         self, item: Item, artist: str, title: str
@@ -169,7 +170,8 @@ class AISauce(MetadataSourcePlugin):
                 )
             return await asyncio.gather(*tasks)
 
-        return [i.to_track_info() for i in asyncio.run(_run())]
+        item_candidates: list[TrackInfoAIResponse] = asyncio.run(_run())
+        return [i.to_track_info(data_source=self.data_source) for i in item_candidates]
 
 
 def _format_user_prompt(

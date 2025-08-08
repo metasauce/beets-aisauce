@@ -13,6 +13,8 @@ class TrackInfoAIResponse(BaseModel):
     genres: str | None
     date: str | None
     comment: str | None
+    length: int | None
+    index: int | None
 
 class AlbumInfoAIResponse(BaseModel):
     tracks: list[TrackInfoAIResponse]

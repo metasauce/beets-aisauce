@@ -32,8 +32,10 @@ class TrackInfoAIResponse(BaseModel):
     genres: str | None
     date: str | None
     comment: str | None
+    length: int | None
+    index: int | None
 
-    def to_track_info(self) -> TrackInfo:
+    def to_track_info(self, **kwargs) -> TrackInfo:
         """
         Convert the AI response to a structured Beets TrackInfo object.
         """
@@ -45,6 +47,8 @@ class TrackInfoAIResponse(BaseModel):
             genres=self.genres,
             date=self.date,
             comment=self.comment,
+            length=self.length,
+            index=self.index,
         )
 
 
@@ -57,16 +61,22 @@ class AlbumInfoAIResponse(BaseModel):
     label: str | None
     is_compilation: bool | None  # mapped to `va`
 
-    def to_album_info(self) -> AlbumInfo:
+    def to_album_info(self, **kwargs) -> AlbumInfo:
         """
         Convert the AI response to a structured Beets AlbumInfo object.
         """
+
+        # Apply datasource to track and album fields
+        data_source = kwargs.pop("data_source", None)
+
         return AlbumInfo(
-            tracks=[ti.to_track_info() for ti in self.tracks],
+            tracks=[ti.to_track_info(data_source=data_source) for ti in self.tracks],
             album=self.album_title,
             artist=self.album_artist,
             genre=self.genre,
             year=self.year,
             label=self.label,
             va=self.is_compilation or False,  # Default to False if not provided
+            data_source=data_source,
+            **kwargs,
         )
