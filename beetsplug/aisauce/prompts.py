@@ -36,7 +36,6 @@ Rules:
     - Wrong values should not be included e.g. "Unknown" or "N/A". 
     - If a field makes no sense, e.g. 0 for date, it should not be included.
 - A user may supply an additional set of rules, which you should follow if provided. 
-    
 
 Example:
 Clean up the following metadata:

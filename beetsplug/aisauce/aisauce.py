@@ -120,7 +120,11 @@ class AISauce(MetadataSourcePlugin):
         return None
 
     def candidates(
-        self, items: Sequence[Item], artist: str, album: str, va_likely: bool
+        self,
+        items: Sequence[Item],
+        artist: str,
+        album: str,
+        va_likely: bool,
     ) -> Iterable[AlbumInfo]:
         async def _run() -> list[AlbumInfoAIResponse]:
             tasks: list[Coroutine[None, None, AlbumInfoAIResponse]] = []
@@ -148,7 +152,10 @@ class AISauce(MetadataSourcePlugin):
         return [c.to_album_info(data_source=self.data_source) for c in candidates]
 
     def item_candidates(
-        self, item: Item, artist: str, title: str
+        self,
+        item: Item,
+        artist: str,
+        title: str,
     ) -> Iterable[TrackInfo]:
         """
         Beets by default calls this for singletons, but not for albums.

@@ -44,7 +44,7 @@ Let artificial intelligence decipher and enhance the mysterious metadata of your
    ```bash
    pip install beets-aisauce
    ```
-2. **Configuration**: Add the plugin to your Beets configuration file (`config.yaml`):
+2. **Configuration**: Add the plugin to your Beets configuration file (`config.yaml`/`beets config -e`) with your AI provider details:
    ```yaml
     plugins: 
       - aisauce
@@ -57,7 +57,6 @@ Let artificial intelligence decipher and enhance the mysterious metadata of your
               api_base_url: https://api.openai.com/v1
     ```
 3. Execute the Ai Sauce: Import your tracks through Beets to start receiving AI-enhanced metadata suggestions.
-
 
 ## Advanced Usage
 

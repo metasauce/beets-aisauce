@@ -1,7 +1,7 @@
 [project]
 authors = [{ name = "Sebastian B. Mohr", email = "sebastian@mohrenclan.de" }]
 name = "beets-aisauce"
-version = "0.0.1"
+version = "0.1.0"
 description = "AI autotagger source for beets (http://beets.io)."
 readme = "README.md"
 license = "MIT"
@@ -16,8 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    #"beets >= 2.4.2", # Future version with metadata_plugins support (not released yet, we should pin to master)
-    "beets",
+    "beets>=2.5.1",
     "openai >= 1.98.0",
     "instructor >= 1.10.0",
     "eval-type-backport; python_version == '3.9'",
@@ -58,12 +57,7 @@ convention = "numpy"
 check_untyped_defs = true
 disallow_untyped_decorators = true
 
-
-[tool.hatch.metadata]
-# TODO: remove with next beets release
-allow-direct-references = true
-
 [[tool.mypy.overrides]]
 # Suppresses error messages about imports that cannot be resolved.
-module = ["beets.*", "confuse.*"]
+module = ["confuse.*"]
 ignore_missing_imports = true
