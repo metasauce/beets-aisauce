@@ -30,6 +30,20 @@ Let artificial intelligence decipher and enhance the mysterious metadata of your
 - **Cleanup Crew**: Strip away unnecessary embellishments like "Free Download" in titles or SHOUTCAPS, giving your library a polished appearance.
 - **Extensible System**: Leverage AI configurations and prompts custom tailored for your library needs.
 
+```shell
+> beet import Faith\ in\ Strangers\ \[Free\ Download\]\ -\ Official\ Version.mp3 -p
+
+/home/smohr/Repositories/beets-aisauce/.local/Faith in Strangers [Free Download] - Official Version.mp3 (1 items)
+
+  Match (79.2%):
+  Andy Stott - Faith In Strangers
+  ≠ album, tracks
+  AISauce, None, 2014, None, None, None, None
+  * Artist: Andy Stott
+  ≠ Album: Faith in Strangers - More at website here  -> Faith In Strangers
+     ≠ (#1) Faith in Strangers -  Free download - Version v1 (6:29) -> (#1) Faith In Strangers - Version V1 (6:29)
+➜ [A]pply, More candidates, Skip, Use as-is, as Tracks, Group albums,
+```
 
 ## Installation
 

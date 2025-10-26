@@ -36,6 +36,8 @@ Rules:
     - Wrong values should not be included e.g. "Unknown" or "N/A". 
     - If a field makes no sense, e.g. 0 for date, it should not be included.
 - A user may supply an additional set of rules, which you should follow if provided. 
+- Do not remove version specifications if they are found e.g. "Version 1.1", "winslow.edit", "Extended Mix", etc.
+- Do never add to the title, album or artist fields any information that is not explicitly present in the input.
 
 Example:
 Clean up the following metadata:
