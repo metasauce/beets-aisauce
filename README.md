@@ -30,21 +30,6 @@ Let artificial intelligence decipher and enhance the mysterious metadata of your
 - **Cleanup Crew**: Strip away unnecessary embellishments like "Free Download" in titles or SHOUTCAPS, giving your library a polished appearance.
 - **Extensible System**: Leverage AI configurations and prompts custom tailored for your library needs.
 
-```shell
-> beet import Faith\ in\ Strangers\ \[Free\ Download\]\ -\ Official\ Version.mp3 -p
-
-/home/smohr/Repositories/beets-aisauce/.local/Faith in Strangers [Free Download] - Official Version.mp3 (1 items)
-
-  Match (79.2%):
-  Andy Stott - Faith In Strangers
-  ≠ album, tracks
-  AISauce, None, 2014, None, None, None, None
-  * Artist: Andy Stott
-  ≠ Album: Faith in Strangers - More at website here  -> Faith In Strangers
-     ≠ (#1) Faith in Strangers -  Free download - Version v1 (6:29) -> (#1) Faith In Strangers - Version V1 (6:29)
-➜ [A]pply, More candidates, Skip, Use as-is, as Tracks, Group albums,
-```
-
 ## Installation
 
 ### Prerequisites
@@ -64,13 +49,48 @@ Let artificial intelligence decipher and enhance the mysterious metadata of your
       - aisauce
 
     aisauce:
+        mode: "metadata_source" # or "metadata_cleanup"
         providers:
             - id: openai
               model: gpt-4o
               api_key: YOUR_API_KEY_HERE
               api_base_url: https://api.openai.com/v1
     ```
-3. Execute the Ai Sauce: Import your tracks through Beets to start receiving AI-enhanced metadata suggestions.
+3. Execute the AI Sauce: Import your tracks through Beets to start receiving AI-enhanced metadata suggestions.
+
+
+## Usage
+
+There are two main ways to use the AI Sauce plugin, either as metadata source during import or as a pre-import correction step. You can also combine both methods for maximum flavor.
+
+### As a Metadata Source During Import
+
+When importing new music, the AI Sauce plugin can act as a metadata source. Beets will query the AI model to suggest metadata for tracks that lack sufficient information.
+
+For this set the `as_metadata_source` option to `true` in your configuration:
+
+```yaml
+aisauce:
+    mode: "metadata_source"
+    providers:
+        ...
+```
+
+During `beet import`, the plugin will prompt the AI model to generate metadata suggestions based on existing tags or file names.
+
+### As a Pre-Import Correction Step
+
+If you want to use AI to cleanup your metadata before retrieving candidates from other sources, set the `as_metadata_source` option to `false`:
+
+```yaml
+aisauce:
+    mode: "metadata_cleanup"
+    providers:
+        ...
+```
+
+During `beet import`, the plugin will first use the AI model to correct and enhance existing metadata before proceeding with the standard import process. This allows you to clean up messy tags before Beets attempts to match them with external databases.
+
 
 ## Advanced Usage
 

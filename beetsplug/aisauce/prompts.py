@@ -31,7 +31,7 @@ Rules:
 - Strip out promotional tags like "Free DL via Soundcloud", "[Free Download]", "FREE DOWNLOAD", "JackTheRipper", etc.
 - Normalize genres to full names (e.g. "Drum And Bass", not "DnB").
 - Format all text as Title Case. Avoid SHOUTCASE (capslock).
-- Use the file name as a hint for artist/title/album when metadata fields are empty or malformed.
+- Use the file path as a hint for artist/title/album when metadata fields are empty or malformed.
 - Remove malformed or empty fields from the output
     - Wrong values should not be included e.g. "Unknown" or "N/A". 
     - If a field makes no sense, e.g. 0 for date, it should not be included.
@@ -42,7 +42,7 @@ Rules:
 Example:
 Clean up the following metadata:
 {
-    "FILE:": ["  Busta Rhymes - Gimme Some More (winslow.edit).mp3 "],
+    "path:": ["  Busta Rhymes - Gimme Some More (winslow.edit).mp3 "],
     "TITLE": [" Busta Rhymes - Gimme Some More [Free DL via Soundcloud] "],
     "ARTIST": ["  winslow "],
     "ALBUM": [""],

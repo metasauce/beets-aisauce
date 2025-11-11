@@ -2,6 +2,7 @@ from __future__ import annotations
 
 
 from typing import TypedDict
+from beets.library import Item
 from pydantic import BaseModel
 
 from beets.autotag import TrackInfo, AlbumInfo
@@ -25,12 +26,13 @@ class AISauceSource(TypedDict):
 
 
 class TrackInfoAIResponse(BaseModel):
+    filename: str | None
     title: str
     artist: str
     album: str
     album_artist: str | None
     genres: str | None
-    date: str | None
+    year: int | None
     comment: str | None
     length: int | None
     index: int | None
@@ -45,7 +47,7 @@ class TrackInfoAIResponse(BaseModel):
             album=self.album,
             album_artist=self.album_artist,
             genres=self.genres,
-            date=self.date,
+            year=self.year,
             comment=self.comment,
             length=self.length,
             index=self.index,
@@ -80,3 +82,65 @@ class AlbumInfoAIResponse(BaseModel):
             data_source=data_source,
             **kwargs,
         )
+
+    def apply_to_items(self, items: list[Item]) -> list[dict[str, dict[str, str]]]:
+        """
+        Apply the AI response data to a list of Beets Item objects
+        and return a diff of changes made.
+
+        Returns:
+            dict: A dictionary containing:
+                - 'applied_changes': list of dicts showing changes per item
+                - 'summary': dict with counts of total changes by field
+        """
+        applied_changes = []
+
+        for i, (ai_track, item) in enumerate(zip(self.tracks, items)):
+            # Track changes for each field
+            changes = {}
+
+            if item.title != ai_track.title:
+                changes["title"] = {"old": item.title, "new": ai_track.title}
+                item.title = ai_track.title
+
+            if item.artist != ai_track.artist:
+                changes["artist"] = {"old": item.artist, "new": ai_track.artist}
+                item.artist = ai_track.artist
+
+            if item.album != ai_track.album:
+                changes["album"] = {"old": item.album, "new": ai_track.album}
+                item.album = ai_track.album
+
+            if (
+                ai_track.album_artist is not None
+                and item.albumartist != ai_track.album_artist
+            ):
+                changes["albumartist"] = {
+                    "old": item.albumartist,
+                    "new": ai_track.album_artist,
+                }
+                item.albumartist = ai_track.album_artist
+
+            if ai_track.genres is not None and item.genre != ai_track.genres:
+                changes["genre"] = {"old": item.genre, "new": ai_track.genres}
+                item.genre = ai_track.genres
+
+            if ai_track.year is not None and item.year != ai_track.year:
+                changes["year"] = {"old": item.year, "new": ai_track.year}
+                item.year = ai_track.year
+
+            if ai_track.comment is not None and item.comment != ai_track.comment:
+                changes["comment"] = {"old": item.comment, "new": ai_track.comment}
+                item.comment = ai_track.comment
+
+            if ai_track.length is not None and item.length != ai_track.length:
+                changes["length"] = {"old": item.length, "new": ai_track.length}
+                item.length = ai_track.length
+
+            if ai_track.index is not None and item.track != ai_track.index:
+                changes["track"] = {"old": item.track, "new": ai_track.index}
+                item.track = ai_track.index
+
+            applied_changes.append(changes)
+
+        return applied_changes
