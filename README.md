@@ -67,7 +67,7 @@ There are two main ways to use the AI Sauce plugin, either as metadata source du
 
 When importing new music, the AI Sauce plugin can act as a metadata source. Beets will query the AI model to suggest metadata for tracks that lack sufficient information.
 
-For this set the `as_metadata_source` option to `true` in your configuration:
+For this set the `mode` option to `metadata_source` in your configuration file:
 
 ```yaml
 aisauce:
@@ -80,7 +80,7 @@ During `beet import`, the plugin will prompt the AI model to generate metadata s
 
 ### As a Pre-Import Correction Step
 
-If you want to use AI to cleanup your metadata before retrieving candidates from other sources, set the `as_metadata_source` option to `false`:
+If you want to use AI to cleanup your metadata before retrieving candidates from other sources, set the `mode` option to `metadata_cleanup`:
 
 ```yaml
 aisauce:
