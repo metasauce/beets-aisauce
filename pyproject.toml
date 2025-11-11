@@ -1,7 +1,7 @@
 [project]
 authors = [{ name = "Sebastian B. Mohr", email = "sebastian@mohrenclan.de" }]
 name = "beets-aisauce"
-version = "0.2.0"
+version = "0.2.1"
 description = "AI autotagger source for beets (http://beets.io)."
 readme = "README.md"
 license = "MIT"

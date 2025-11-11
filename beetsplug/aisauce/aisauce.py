@@ -1,7 +1,6 @@
 from __future__ import annotations
 import asyncio
 from collections.abc import Iterable
-from pprint import pformat
 from typing import Coroutine, Literal, Sequence
 
 from beets.autotag import TrackInfo, AlbumInfo
@@ -61,7 +60,7 @@ class AISauce(MetadataSourcePlugin):
             )
         )
 
-        return [Provider(sv) for sv in config_subview]
+        return [Provider(sv) for sv in config_subview]  # type: ignore
 
     def provider_for_id(self, provider_id: str) -> Provider | None:
         """Return the provider with the given ID, or None if not found."""
@@ -155,7 +154,7 @@ class AISauce(MetadataSourcePlugin):
         for item, changes in zip(task.items, diff):
             if not changes:
                 continue
-            self._log.info(f"Updated metadata for {item.path}:")
+            self._log.info(f"Updated metadata for {item.path!r}:")
             for field, change in changes.items():
                 self._log.info(f"  {field}: {change['old']} -> {change['new']}")
 
